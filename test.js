@@ -1,5 +1,5 @@
 var assert = require('assert');
-var Grid3D = require('./index.js');
+var ThreeGrid = require('./index.js');
 
 //First we need some sort of grid. Grids are arranged in an [x][y] fashion made
 //up of sequential, positive integers, with 0,0 being the bottom-left corner,
@@ -130,5 +130,5 @@ var grid = [
 //Sheesh. The IDs are creator-defined as they may be determined by some means
 //other than "what order in the array are you."
 
-var map = new Grid3D(grid);
+var map = new ThreeGrid(grid);
 
