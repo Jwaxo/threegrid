@@ -130,5 +130,11 @@ var grid = [
 //Sheesh. The IDs are creator-defined as they may be determined by some means
 //other than "what order in the array are you."
 
-var map = new ThreeGrid(grid);
+var config = {
+    "size" : "0",
+    "type" : "type",
+    "asset_location" : "./examples/shapes"
+}
+
+var map = new ThreeGrid(grid, config);
 
