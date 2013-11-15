@@ -136,5 +136,7 @@ var config = {
     "asset_location" : "./examples/shapes"
 }
 
-var map = new ThreeGrid(grid, config);
+var map = new ThreeGrid(grid);
+
+var renderedMap = map.renderGrid(config);
 

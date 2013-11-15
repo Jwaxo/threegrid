@@ -44,6 +44,49 @@ module.exports = function(grid) {
         //have sibling gridpoints touching it, it turns itself off, because it
         //will not affect the shape of the center point, the one we care about.
         var shape = 0;
+        var binaryArray = [];
+        var siblings = [
+            {
+                "x" : x-1,
+                "y" : y+1
+            }, //1
+            {
+                "x" : x,
+                "y" : y+1
+            }, //2
+            {
+                "x" : x+1,
+                "y" : y+1
+            }, //3
+            {
+                "x" : x+1,
+                "y" : y+1
+            }, //4
+            {
+                "x" : x+1,
+                "y" : [y-1]
+            }, //5
+            {
+                "x" : x,
+                "y" : y-1
+            }, //6
+            {
+                "x" : x-1,
+                "y" : y-1
+            }, //7
+            {
+                "x" : x-1,
+                "y" : y
+            } //8
+        ];
+
+        for (var i=0;i<siblings.length;i++) {
+            if (this.grid[siblings[i].x]
+                && this.grid[siblings[i].x][siblings[i].y]
+                && this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('id')) {
+                console.log('Found.');
+            }
+        }
         
         return shape;
     }
