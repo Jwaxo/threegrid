@@ -2,7 +2,7 @@ module.exports = function() {
 
     Three = require('three');
 
-    return function(grid) {
+    return function(grid, config) {
     
         var map = {};
     
