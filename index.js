@@ -18,11 +18,11 @@ module.exports = function(grid) {
         var map = {};
         var thisShape = 0;
         
-        for (var i=0;i<grid.length;i++) {
+        for (var x=0;x<grid.length;x++) {
             
-            for (var j=0;j<grid[i].length;j++) {
+            for (var y=0;y<grid[x].length;y++) {
                 
-                thisShape = this.findShape(i,j);
+                grid[x][y].shape = this.findShape(x,y, false);
                 
             }
             
@@ -31,7 +31,7 @@ module.exports = function(grid) {
         return map;
     }
     
-    this.findShape = function(x,y) {
+    this.findShape = function(x,y,checkCorners) {
         //Returns any of the 255* possible shapes that a tile might take given
         //its surrounding siblings. The number when converted to binary refers
         //to each of the eight surrounding tiles starting from the top-left and
@@ -45,6 +45,7 @@ module.exports = function(grid) {
         //will not affect the shape of the center point, the one we care about.
         var shape = '';
         var binaryArray = [];
+        var cornersRef = [6,4,2,0]; //These ones are in the corners
         //Because the grid is arranged in HTML-render order to ease my mind at
         //a later date, y is inverted from the traditional thinking--higher
         //numbers are lower down.
@@ -82,7 +83,9 @@ module.exports = function(grid) {
                 "y" : y
             } //8
         ];
-
+        
+        //Now we look through our submitted grid and mark which tiles around
+        //each tile have the same parent, are a parent of, or are a child of
         for (var i=7;i>=0;i--) {
             if (this.grid[siblings[i].x]
                 && this.grid[siblings[i].x][siblings[i].y]
@@ -100,11 +103,22 @@ module.exports = function(grid) {
                         )
                     )
                 ) {
-                shape = shape + '1';
+                binaryArray.push(1);
             } else {
-                shape = shape + '0';
+                binaryArray.push(0);
             }
         }
+        
+        //If the option is marked, we can eliminate corner pieces that also
+        //don't have siblings around them, as this means they won't be touching
+        //our "center" tiles 
+        for (var i=0;i<binaryArray.length;i++) {
+            if (cornerRef.indexOf(i) > -1) {
+                //TODO
+            }
+        }
+
+        shape = parseInt(shape, 2);
         console.log ('Shape in binary for ' + x + ',' + y + ' is ' + shape);
         
         return shape;
