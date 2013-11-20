@@ -20,7 +20,7 @@ module.exports = function(grid) {
         
         for (var i=0;i<grid.length;i++) {
             
-            for (var j=0;i<grid[i].length;j++) {
+            for (var j=0;j<grid[i].length;j++) {
                 
                 thisShape = this.findShape(i,j);
                 
@@ -43,36 +43,39 @@ module.exports = function(grid) {
         //*Actually an unknown lesser number, as if any corner point does not
         //have sibling gridpoints touching it, it turns itself off, because it
         //will not affect the shape of the center point, the one we care about.
-        var shape = 0;
+        var shape = '';
         var binaryArray = [];
+        //Because the grid is arranged in HTML-render order to ease my mind at
+        //a later date, y is inverted from the traditional thinking--higher
+        //numbers are lower down.
         var siblings = [
             {
                 "x" : x-1,
-                "y" : y+1
+                "y" : y-1
             }, //1
             {
                 "x" : x,
-                "y" : y+1
+                "y" : y-1
             }, //2
             {
                 "x" : x+1,
-                "y" : y+1
+                "y" : y-1
             }, //3
             {
                 "x" : x+1,
-                "y" : y+1
+                "y" : y
             }, //4
             {
                 "x" : x+1,
-                "y" : [y-1]
+                "y" : y+1
             }, //5
             {
                 "x" : x,
-                "y" : y-1
+                "y" : y+1
             }, //6
             {
                 "x" : x-1,
-                "y" : y-1
+                "y" : y+1
             }, //7
             {
                 "x" : x-1,
@@ -80,13 +83,29 @@ module.exports = function(grid) {
             } //8
         ];
 
-        for (var i=0;i<siblings.length;i++) {
+        for (var i=7;i>=0;i--) {
             if (this.grid[siblings[i].x]
                 && this.grid[siblings[i].x][siblings[i].y]
-                && this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('id')) {
-                console.log('Found.');
+                && this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('id')
+                && (
+                    (this.grid[x][y].hasOwnProperty('parentid')
+                        && (this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('parentid')
+                            && this.grid[siblings[i].x][siblings[i].y].parentid
+                                == this.grid[x][y].parentid
+                            ) || this.grid[siblings[i].x][siblings[i].y].id
+                                == this.grid[x][y].parentid
+                        ) || (this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('parentid')
+                        && this.grid[siblings[i].x][siblings[i].y].parentid
+                            == this.grid[x][y].id
+                        )
+                    )
+                ) {
+                shape = shape + '1';
+            } else {
+                shape = shape + '0';
             }
         }
+        console.log ('Shape in binary for ' + x + ',' + y + ' is ' + shape);
         
         return shape;
     }

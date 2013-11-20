@@ -75,8 +75,9 @@ var grid = [
             "parentid" : "3"
         },
         {
-            "type" : "park",
-            "id"   : "14"
+            "type" : "house",
+            "id"   : "14",
+            "parentid" : "19"
         }
     ],
     [
@@ -98,7 +99,7 @@ var grid = [
             "parentid" : "3"
         },
         {
-            "type" : "park",
+            "type" : "house",
             "id"   : "19"
         }
     ],
