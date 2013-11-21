@@ -112,12 +112,14 @@ module.exports = function(grid) {
         //If the option is marked, we can eliminate corner pieces that also
         //don't have siblings around them, as this means they won't be touching
         //our "center" tiles 
-        for (var i=0;i<8;i++) {
-            if (binaryArray[i] === 1
-                && cornersRef.indexOf(i) > -1
-                && (binaryArray[(i+1)%8] === 0 || binaryArray[(i-1)%8] === 0)
-                ) {
-                binaryArray[i] = 0;
+        if (checkCorners === true) {
+            for (var i=0;i<8;i++) {
+                if (binaryArray[i] === 1
+                    && cornersRef.indexOf(i) > -1
+                    && (binaryArray[(i+1)%8] === 0 || binaryArray[(i-1)%8] === 0)
+                    ) {
+                    binaryArray[i] = 0;
+                }
             }
         }
         
