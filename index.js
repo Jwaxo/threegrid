@@ -86,7 +86,7 @@ module.exports = function(grid) {
         
         //Now we look through our submitted grid and mark which tiles around
         //each tile have the same parent, are a parent of, or are a child of
-        for (var i=7;i>=0;i--) {
+        for (var i=0;i<8;i++) {
             if (this.grid[siblings[i].x]
                 && this.grid[siblings[i].x][siblings[i].y]
                 && this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('id')
@@ -112,14 +112,20 @@ module.exports = function(grid) {
         //If the option is marked, we can eliminate corner pieces that also
         //don't have siblings around them, as this means they won't be touching
         //our "center" tiles 
-        for (var i=0;i<binaryArray.length;i++) {
-            if (cornerRef.indexOf(i) > -1) {
-                //TODO
+        for (var i=0;i<8;i++) {
+            if (binaryArray[i] === 1
+                && cornersRef.indexOf(i) > -1
+                && (binaryArray[(i+1)%8] === 0 || binaryArray[(i-1)%8] === 0)
+                ) {
+                binaryArray[i] = 0;
             }
         }
+        
+        shape = binaryArray.reverse().join('');
 
         shape = parseInt(shape, 2);
-        console.log ('Shape in binary for ' + x + ',' + y + ' is ' + shape);
+        console.log ('Shape in integer for ' + x + ',' + y + ' is ' + shape);
+
         
         return shape;
     }
