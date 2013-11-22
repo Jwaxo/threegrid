@@ -5,6 +5,100 @@ module.exports = function(grid) {
     //  the rendering field, viewed from the top-down.
 
     require('three'); //Assigns the renderer to THREE automatically
+    
+    //The following lookup list is used to define similar shapes (IE, shapes that
+    //rotate to equal each other. It assumes the corners check, and 'rotates'
+    //indicates how many clockwise rotations it takes to get to the original
+    this.shapeLookup = {
+        '4' : {
+            'original' : 1,
+            'rotates' : 3
+        },
+        '8' : {
+            'original' : 1,
+            'rotates' : 2
+        },
+        '64' : {
+            'original' : 1,
+            'rotates' : 1
+        },
+        '68' : {
+            'original' : 17,
+            'rotates' : 2
+        },
+        '69' : {
+            'original' : 21,
+            'rotates' : 1
+        },
+        '71' : {
+            'original' : 29,
+            'rotates' : 1
+        },
+        '84' : {
+            'original' : 21,
+            'rotates' : 3
+        },
+        '87' : {
+            'original' : 53,
+            'rotates' : 2
+        },
+        '93' : {
+            'original' : 53,
+            'rotates' : 1
+        },
+        '116' : {
+            'original' : 29,
+            'rotates' : 3
+        },
+        '124' : {
+            'original' : 31,
+            'rotates' : 3
+        },
+        '125' : {
+            'original' : 95,
+            'rotates' : 3
+        },
+        '162' : {
+            'original' : 21,
+            'rotates' : 2
+        },
+        '199' : {
+            'original' : 31,
+            'rotates' : 1
+        },
+        '209' : {
+            'original' : 29,
+            'rotates' : 2
+        },
+        '213' : {
+            'original' : 53,
+            'rotates' : 3
+        },
+        '215' : {
+            'original' : 95,
+            'rotates' : 1
+        },
+        '223' : {
+            'original' : 127,
+            'rotates' : 1
+        },
+        '241' : {
+            'original' : 31,
+            'rotates' : 2
+        },
+        '245' : {
+            'original' : 95,
+            'rotates' : 2
+        },
+        '247' : {
+            'original' : 127,
+            'rotates' : 2
+        },
+        '253' : {
+            'original' : 127,
+            'rotates' : 3
+        }
+    };
 
     this.renderGrid = function(config) {
         //'config' has a number of optional parameters, which include:
