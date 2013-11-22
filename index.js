@@ -109,7 +109,7 @@ module.exports = function(grid) {
         
         this.grid = grid; //We use it in virtually every function, so assign it.
     
-        var map = {};
+        var map = new THREE.CanvasRenderer();
         var thisShape = 0;
         
         for (var x=0;x<grid.length;x++) {
@@ -224,6 +224,32 @@ module.exports = function(grid) {
 
         
         return shape;
+    }
+    
+    this.drawShape = function(shape) {
+    /*
+    var starPoints = [];
+        
+    starPoints.push( new THREE.Vector2 ( 0, 50 ) );
+    starPoints.push( new THREE.Vector2 ( 10, 10 ) );
+    starPoints.push( new THREE.Vector2 ( 40, 10 ) );
+    starPoints.push( new THREE.Vector2 ( 20, -10 ) );
+    starPoints.push( new THREE.Vector2 ( 30, -50 ) );
+    starPoints.push( new THREE.Vector2 ( 0, -20 ) );
+    starPoints.push( new THREE.Vector2 ( -30, -50 ) );
+    starPoints.push( new THREE.Vector2 ( -20, -10 ) );
+    starPoints.push( new THREE.Vector2 ( -40, 10 ) );
+    starPoints.push( new THREE.Vector2 ( -10, 10 ) );
+    
+    var starShape = new THREE.Shape( starPoints );
+
+    var extrusionSettings = {
+            size: 30, height: 4, curveSegments: 3,
+            bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+            material: 0, extrudeMaterial: 1
+    };
+    */
+    
     }
     
     return this;
