@@ -4,7 +4,7 @@ module.exports = function(grid) {
     //  gridpoint that is three to the right and four below the top-left of
     //  the rendering field, viewed from the top-down.
 
-    require('three'); //Assigns the renderer to THREE automatically
+    THREE = require('three'); //Assigns the renderer to THREE automatically
     
     //The following lookup list is used to define similar shapes (IE, shapes that
     //rotate to equal each other. It assumes the corners check, and 'rotates'
