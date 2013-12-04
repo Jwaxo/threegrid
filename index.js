@@ -7,6 +7,10 @@ module.exports = function(grid) {
     THREE = require('three'); //Assigns the renderer to THREE automatically
     fs = require('fs');
     
+    this.grid = grid; //We use it in virtually every function, so assign it.
+    this.shapesLookup = require('./default_shapes.js'); //If a file isn't found
+    //to draw for a specific shapetype, then use this.
+    
     //The following lookup list is used to define similar shapes (IE, shapes that
     //rotate to equal each other. It assumes the corners check, and 'rotates'
     //indicates how many clockwise rotations it takes to get to the original
@@ -108,10 +112,10 @@ module.exports = function(grid) {
         //  asset_location - if a gridpoint has a folder assigned to its type,
         //      where to look. Requires the fs module to be installed.
         
-        this.grid = grid; //We use it in virtually every function, so assign it.
+        this.config = config;
         
-        var WIDTH = config.render_width,
-            HEIGHT = config.render_height;
+        var WIDTH = 800,
+            HEIGHT = 600;
 
         // set some camera attributes
         var VIEW_ANGLE = 45,
@@ -131,7 +135,7 @@ module.exports = function(grid) {
                                         ASPECT,
                                         NEAR,
                                         FAR  );
-        var scene = new THREE.Scene();
+        this.scene = new THREE.Scene();
 
         // the camera starts at 0,0,0 so pull it back
         camera.position.z = 300;
@@ -141,17 +145,11 @@ module.exports = function(grid) {
 
         // attach the render-supplied DOM element
         container.appendChild(renderer.domElement);
-
-        var thisShape = 0;
         
         for (var x=0;x<grid.length;x++) {
-            
             for (var y=0;y<grid[x].length;y++) {
-                
                 grid[x][y].shape = this.findShape(x,y, false);
-                
             }
-            
         }
     
         // create the sphere's material
@@ -170,10 +168,10 @@ module.exports = function(grid) {
            sphereMaterial);
 
         // add the sphere to the scene
-        scene.add(sphere);
+        this.scene.add(sphere);
 
         // and the camera
-        scene.add(camera);
+        this.scene.add(camera);
 
         // create a point light
         var pointLight = new THREE.PointLight( 0xFFFFFF );
@@ -184,10 +182,10 @@ module.exports = function(grid) {
         pointLight.position.z = 130;
 
         // add to the scene
-        scene.add(pointLight);
+        this.scene.add(pointLight);
 
         // draw!
-        renderer.render(scene, camera);
+        renderer.render(this.scene, camera);
         console.log('rendered!');
     
         return renderer;
@@ -294,32 +292,66 @@ module.exports = function(grid) {
     }
     
     this.drawShape = function(shape) {
-    /*
-    var starPoints = [];
+    
+        var jsonLoader = new THREE.JSONLoader();
+        var shape_array = [];
+    
+        if (fs.exists(this.config.asset_location + "/" + shape + '.js')) {
+            
+            jsonLoader.load(this.config.asset_location + "/" + shape + '.js',this.scene.add);
+        } else { //We didn't find the file, so lookup how to draw it, then extrude
+            //TODO: Whoops, needs to lookup if the requested shape is actually
+            //a rotated parent shape.
+            shape_array = this.shapesLookup[shape];
+        }
+        /*
+        var starPoints = [];
+            
+        starPoints.push( new THREE.Vector2 ( 0, 50 ) );
+        starPoints.push( new THREE.Vector2 ( 10, 10 ) );
+        starPoints.push( new THREE.Vector2 ( 40, 10 ) );
+        starPoints.push( new THREE.Vector2 ( 20, -10 ) );
+        starPoints.push( new THREE.Vector2 ( 30, -50 ) );
+        starPoints.push( new THREE.Vector2 ( 0, -20 ) );
+        starPoints.push( new THREE.Vector2 ( -30, -50 ) );
+        starPoints.push( new THREE.Vector2 ( -20, -10 ) );
+        starPoints.push( new THREE.Vector2 ( -40, 10 ) );
+        starPoints.push( new THREE.Vector2 ( -10, 10 ) );
         
-    starPoints.push( new THREE.Vector2 ( 0, 50 ) );
-    starPoints.push( new THREE.Vector2 ( 10, 10 ) );
-    starPoints.push( new THREE.Vector2 ( 40, 10 ) );
-    starPoints.push( new THREE.Vector2 ( 20, -10 ) );
-    starPoints.push( new THREE.Vector2 ( 30, -50 ) );
-    starPoints.push( new THREE.Vector2 ( 0, -20 ) );
-    starPoints.push( new THREE.Vector2 ( -30, -50 ) );
-    starPoints.push( new THREE.Vector2 ( -20, -10 ) );
-    starPoints.push( new THREE.Vector2 ( -40, 10 ) );
-    starPoints.push( new THREE.Vector2 ( -10, 10 ) );
-    
-    var starShape = new THREE.Shape( starPoints );
+        var starShape = new THREE.Shape( starPoints );
 
-    var extrusionSettings = {
-            size: 30, height: 4, curveSegments: 3,
-            bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-            material: 0, extrudeMaterial: 1
-    };
+        var extrusionSettings = {
+                size: 30, height: 4, curveSegments: 3,
+                bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+                material: 0, extrudeMaterial: 1
+        };
+        
+        var starGeometry = new THREE.ExtrudeGeometry( starShape, extrusionSettings );
+        */
     
-    var starGeometry = new THREE.ExtrudeGeometry( starShape, extrusionSettings );
-    */
-    
+        function addModelToScene( geometry, materials ) {
+            var material = new THREE.MeshFaceMaterial( materials );
+            var model = new THREE.Mesh( geometry, material );
+            model.scale.set(10,10,10);
+            scene.add( model );
+        }
+        function rotate(x, y, xm, ym, a) {
+            var cos = Math.cos,
+                sin = Math.sin,
+
+                a = a * Math.PI / 180, // Convert to radians because that's what
+                                       // JavaScript likes
+
+                // Subtract midpoints, so that midpoint is translated to origin
+                // and add it in the end again
+                xr = (x - xm) * cos(a) - (y - ym) * sin(a)   + xm,
+                yr = (x - xm) * sin(a) + (y - ym) * cos(a)   + ym;
+
+            return {'x':xr, 'y':yr};
+        }
     }
+    
+    
     
     return this;
 }
