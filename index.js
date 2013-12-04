@@ -5,11 +5,12 @@ module.exports = function(grid) {
     //  the rendering field, viewed from the top-down.
 
     THREE = require('three'); //Assigns the renderer to THREE automatically
+    fs = require('fs');
     
     //The following lookup list is used to define similar shapes (IE, shapes that
     //rotate to equal each other. It assumes the corners check, and 'rotates'
     //indicates how many clockwise rotations it takes to get to the original
-    this.shapeLookup = {
+    this.rotateLookup = {
         '4' : {
             'original' : 1,
             'rotates' : 3
@@ -109,8 +110,8 @@ module.exports = function(grid) {
         
         this.grid = grid; //We use it in virtually every function, so assign it.
         
-        var WIDTH = 400,
-            HEIGHT = 300;
+        var WIDTH = config.render_width,
+            HEIGHT = config.render_height;
 
         // set some camera attributes
         var VIEW_ANGLE = 45,
@@ -288,7 +289,6 @@ module.exports = function(grid) {
 
         shape = parseInt(shape, 2);
         console.log ('Shape in integer for ' + x + ',' + y + ' is ' + shape);
-
         
         return shape;
     }
@@ -315,6 +315,8 @@ module.exports = function(grid) {
             bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
             material: 0, extrudeMaterial: 1
     };
+    
+    var starGeometry = new THREE.ExtrudeGeometry( starShape, extrusionSettings );
     */
     
     }
