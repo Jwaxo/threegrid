@@ -136,6 +136,7 @@ module.exports = function(grid) {
                                         NEAR,
                                         FAR  );
         this.scene = new THREE.Scene();
+        var shape_temp;
 
         // the camera starts at 0,0,0 so pull it back
         camera.position.z = 300;
@@ -149,6 +150,15 @@ module.exports = function(grid) {
         for (var x=0;x<grid.length;x++) {
             for (var y=0;y<grid[x].length;y++) {
                 grid[x][y].shape = this.findShape(x,y, false);
+                try {
+                    var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
+                    if (test) {
+                        jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',this.addModelToScene);
+                    }
+                } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
+                    shape_temp = this.drawShape(grid[x][y].shape);
+                    this.addModelToScene(shape_temp, new THREE.MeshLambertMaterial({color: 0xCC0000}));
+                }
             }
         }
     
@@ -292,49 +302,40 @@ module.exports = function(grid) {
     }
     
     this.drawShape = function(shape) {
-    
-        var jsonLoader = new THREE.JSONLoader();
+        console.log('Drawing shape!');
         var shape_array = [];
+        var shapePoints = [];
+        var parentShape = {};
     
-        if (fs.exists(this.config.asset_location + "/" + shape + '.js')) {
-            
-            jsonLoader.load(this.config.asset_location + "/" + shape + '.js',this.scene.add);
-        } else { //We didn't find the file, so lookup how to draw it, then extrude
-            //TODO: Whoops, needs to lookup if the requested shape is actually
-            //a rotated parent shape.
-            shape_array = this.shapesLookup[shape];
+        if (this.rotateLookup.hasOwnProperty(shape)) {
+            parentShape = this.rotateLookup[shape];
+            shape = parentShape.original;
         }
-        /*
-        var starPoints = [];
-            
-        starPoints.push( new THREE.Vector2 ( 0, 50 ) );
-        starPoints.push( new THREE.Vector2 ( 10, 10 ) );
-        starPoints.push( new THREE.Vector2 ( 40, 10 ) );
-        starPoints.push( new THREE.Vector2 ( 20, -10 ) );
-        starPoints.push( new THREE.Vector2 ( 30, -50 ) );
-        starPoints.push( new THREE.Vector2 ( 0, -20 ) );
-        starPoints.push( new THREE.Vector2 ( -30, -50 ) );
-        starPoints.push( new THREE.Vector2 ( -20, -10 ) );
-        starPoints.push( new THREE.Vector2 ( -40, 10 ) );
-        starPoints.push( new THREE.Vector2 ( -10, 10 ) );
+        try {
+            shape_array = this.shapesLookup[shape];
+        } catch(error) {
+            console.log (error);
+        }
+        for (var i=0;i<shape_array.length;i++) {
+            if (parentShape.hasOwnProperty('rotates')) {
+                shape_array[i] = rotate(shape_array[i].x, shape_array[i].y, 3, 3, 90 * (parentShape.rotates));
+            }
+            console.log('adding coordinate '+shape_array[i].x+','+shape_array[i].y);
+            shapePoints.push(new THREE.Vector2(shape_array[i].x, shape_array[i].y));
+        }
         
-        var starShape = new THREE.Shape( starPoints );
-
+        var threeShape = new THREE.Shape(shapePoints );
+        
         var extrusionSettings = {
-                size: 30, height: 4, curveSegments: 3,
-                bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-                material: 0, extrudeMaterial: 1
+            size: 30, height: 4, curveSegments: 3,
+            bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+            material: 0, extrudeMaterial: 1
         };
         
-        var starGeometry = new THREE.ExtrudeGeometry( starShape, extrusionSettings );
-        */
+        var threeGeometry = new THREE.ExtrudeGeometry(threeShape, extrusionSettings);
+            
+        return threeGeometry;
     
-        function addModelToScene( geometry, materials ) {
-            var material = new THREE.MeshFaceMaterial( materials );
-            var model = new THREE.Mesh( geometry, material );
-            model.scale.set(10,10,10);
-            scene.add( model );
-        }
         function rotate(x, y, xm, ym, a) {
             var cos = Math.cos,
                 sin = Math.sin,
@@ -350,7 +351,13 @@ module.exports = function(grid) {
             return {'x':xr, 'y':yr};
         }
     }
-    
+    this.addModelToScene = function(geometry, materials, position) {
+        var material = new THREE.MeshFaceMaterial( materials );
+        var model = new THREE.Mesh( geometry, material );
+        model.position.set(position.x*7,position.y*7,0);
+        model.scale.set(10,10,10);
+        this.scene.add( model );
+    }
     
     
     return this;
