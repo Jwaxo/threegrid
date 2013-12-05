@@ -157,7 +157,7 @@ module.exports = function(grid) {
                     }
                 } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
                     shape_temp = this.drawShape(grid[x][y].shape);
-                    this.addModelToScene(shape_temp, new THREE.MeshLambertMaterial({color: 0xCC0000}));
+                    this.addModelToScene(shape_temp, new THREE.MeshLambertMaterial({color: 0xCC0000}), {'x':x,'y':y});
                 }
             }
         }
