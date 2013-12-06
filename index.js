@@ -16,11 +16,11 @@ module.exports = function(grid) {
     //indicates how many clockwise rotations it takes to get to the original
     this.rotateLookup = {
         '4' : {
-            'original' : 1,
+            'original' : 2,
             'rotates' : 3
         },
-        '8' : {
-            'original' : 1,
+        '16' : {
+            'original' : 2,
             'rotates' : 2
         },
         '40' : {
@@ -32,7 +32,7 @@ module.exports = function(grid) {
             'rotates' : 3
         },
         '64' : {
-            'original' : 1,
+            'original' : 2,
             'rotates' : 1
         },
         '68' : {
@@ -173,7 +173,7 @@ module.exports = function(grid) {
         
         for (var x=0;x<grid.length;x++) {
             for (var y=0;y<grid[x].length;y++) {
-                grid[x][y].shape = this.findShape(x,y, false);
+                grid[x][y].shape = this.findShape(x,y, true);
                 try {
                     var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
                     if (test) {
@@ -231,7 +231,7 @@ module.exports = function(grid) {
         //to each of the eight surrounding tiles starting from the top-left and
         //moving clockwise:
         //1 2 3             0 1 1
-        //8 X 4 = 87654321  1 X 0 = 10100110 = 166
+        //8 X 4 = 12345678  1 X 0 = 01100101 = 101
         //7 6 5             0 1 0
 
         //*Actually an unknown lesser number, as if any corner point does not
@@ -302,6 +302,10 @@ module.exports = function(grid) {
                 binaryArray.push(0);
             }
         }
+        //binaryArray.reverse();
+        
+        console.log('About to check loneliness on ' + binaryArray.join(''));
+
         
         //If the option is marked, we can eliminate corner pieces that also
         //don't have siblings around them, as this means they won't be touching
@@ -313,11 +317,14 @@ module.exports = function(grid) {
                     && (binaryArray[(i+1)%8] === 0 || binaryArray[(i-1)%8] === 0)
                     ) {
                     binaryArray[i] = 0;
+                    console.log('Lonely corner ' + i + ' fixed!');
                 }
             }
         }
         
-        shape = binaryArray.reverse().join('');
+        console.log('Post-lonely array is ' + binaryArray.join(''));
+        
+        shape = binaryArray.join('');
 
         shape = parseInt(shape, 2);
         console.log ('Shape in integer for ' + x + ',' + y + ' is ' + shape);
