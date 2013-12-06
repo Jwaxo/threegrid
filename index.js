@@ -23,6 +23,14 @@ module.exports = function(grid) {
             'original' : 1,
             'rotates' : 2
         },
+        '40' : {
+            'original' : 5,
+            'rotates' : 3
+        },
+        '56' : {
+            'original' : 14,
+            'rotates' : 3
+        },
         '64' : {
             'original' : 1,
             'rotates' : 1
@@ -63,9 +71,21 @@ module.exports = function(grid) {
             'original' : 95,
             'rotates' : 3
         },
+        '130' : {
+            'original' : 5,
+            'rotates' : 1
+        },
+        '160' : {
+            'original' : 5,
+            'rotates' : 2
+        },
         '162' : {
             'original' : 21,
             'rotates' : 2
+        },
+        '193' : {
+            'original' : 14,
+            'rotates' : 1
         },
         '199' : {
             'original' : 31,
@@ -86,6 +106,10 @@ module.exports = function(grid) {
         '223' : {
             'original' : 127,
             'rotates' : 1
+        },
+        '224' : {
+            'original' : 14,
+            'rotates' : 2
         },
         '241' : {
             'original' : 31,
