@@ -182,11 +182,11 @@ module.exports = function(grid) {
                     }
                 } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
                     shape_temp = this.drawShape(grid[x][y].shape);
-                    this.addModelToScene(shape_temp, new THREE.MeshLambertMaterial({color: 0xCC0000}), {'x':x,'y':y});
+                    this.addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
                 }
             }
         }
-    
+    /*
         // create the sphere's material
         var sphereMaterial = new THREE.MeshLambertMaterial(
         {
@@ -204,7 +204,7 @@ module.exports = function(grid) {
 
         // add the sphere to the scene
         //this.scene.add(sphere);
-
+*/
         // and the camera
         this.scene.add(camera);
 
@@ -353,7 +353,7 @@ module.exports = function(grid) {
         var threeShape = new THREE.Shape(shapePoints );
         
         var extrusionSettings = {
-            size: 30, height: 4, curveSegments: 3,
+            amount: 6, curveSegments: 3,
             bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
             material: 0, extrudeMaterial: 1
         };
@@ -378,7 +378,7 @@ module.exports = function(grid) {
         }
     }
     this.addModelToScene = function(geometry, materials, position) {
-        var material = new THREE.MeshFaceMaterial( materials );
+        var material = new THREE.MeshBasicMaterial( materials );
         var model = new THREE.Mesh( geometry, material );
         model.position.set(position.x*7,position.y*7,0);
         model.scale.set(10,10,10);
