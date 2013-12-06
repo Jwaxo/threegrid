@@ -162,11 +162,13 @@ module.exports = function(grid) {
                                         NEAR,
                                         FAR  );
         this.controls = new THREE.OrbitControls(camera, renderer.domElement);
+        this.controls.addEventListener( 'change', render );
         this.scene = new THREE.Scene();
         var shape_temp;
 
         // the camera starts at 0,0,0 so pull it back
         camera.position.z = 300;
+        camera.position.y = 40;
 
         // start the renderer
         renderer.setSize(WIDTH, HEIGHT);
@@ -222,7 +224,19 @@ module.exports = function(grid) {
         this.scene.add(pointLight);
 
         // draw!
-        renderer.render(this.scene, camera);
+        animate();
+        
+        function render() {
+
+            renderer.render( this.scene, camera );
+
+        }
+        function animate() {
+
+            requestAnimationFrame( animate );
+            this.controls.update();
+
+        }
         console.log('rendered!');
     
         return renderer;
@@ -381,6 +395,7 @@ module.exports = function(grid) {
     this.addModelToScene = function(geometry, materials, position) {
         var material = new THREE.MeshBasicMaterial( materials );
         var model = new THREE.Mesh( geometry, material );
+        console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
         model.position.set(position.x*7,position.y*7,0);
         model.scale.set(10,10,10);
         this.scene.add( model );
