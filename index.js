@@ -161,7 +161,7 @@ module.exports = function(grid) {
                                         ASPECT,
                                         NEAR,
                                         FAR  );
-        this.controls = THREE.OrbitControls(camera, renderer.domElement);
+        this.controls = new THREE.OrbitControls(camera, renderer.domElement);
         this.scene = new THREE.Scene();
         var shape_temp;
 

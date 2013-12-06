@@ -7,20 +7,6 @@
  */
 /*global THREE, console */
 
-// This set of controls performs orbiting, dollying (zooming), and panning. It maintains
-// the "up" direction as +Y, unlike the TrackballControls. Touch on tablet and phones is
-// supported.
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finter swipe
-//
-// This is a drop-in replacement for (most) TrackballControls used in examples.
-// That is, include this js file and wherever you see:
-//    	controls = new THREE.TrackballControls( camera );
-//      controls.target.z = 150;
-// Simple substitute "OrbitControls" and the control should work as-is.
-
 module.exports = function ( object, domElement ) {
 
 	this.object = object;
@@ -28,46 +14,33 @@ module.exports = function ( object, domElement ) {
 
 	// API
 
-	// Set to false to disable this control
 	this.enabled = true;
 
-	// "target" sets the location of focus, where the control orbits around
-	// and where it pans with respect to.
 	this.target = new THREE.Vector3();
 	// center is old, deprecated; use "target" instead
 	this.center = this.target;
 
-	// This option actually enables dollying in and out; left as "zoom" for
-	// backwards compatibility
+	// This option actually enables dollying in and out
 	this.noZoom = false;
 	this.zoomSpeed = 1.0;
-	// Limits to how far you can dolly in and out
-	this.minDistance = 0;
-	this.maxDistance = Infinity;
 
-	// Set to true to disable this control
 	this.noRotate = false;
 	this.rotateSpeed = 1.0;
 
-	// Set to true to disable this control
 	this.noPan = false;
-	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
 
-	// Set to true to automatically rotate around the target
 	this.autoRotate = false;
 	this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
-	// How far you can orbit vertically, upper and lower limits.
-	// Range is 0 to Math.PI radians.
 	this.minPolarAngle = 0; // radians
 	this.maxPolarAngle = Math.PI; // radians
 
-	// Set to true to disable use of the keys
+	this.minDistance = 0;
+	this.maxDistance = Infinity;
+
 	this.noKeys = false;
-	// The four arrow keys
 	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
-	////////////
 	// internals
 
 	var scope = this;
@@ -154,10 +127,8 @@ module.exports = function ( object, domElement ) {
 	// right and down are positive
 	this.pan = function ( delta ) {
 
-		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
-
-		if ( scope.object.fov !== undefined ) {
-
+		if ( scope.object.fov !== undefined )
+		{
 			// perspective
 			var position = scope.object.position;
 			var offset = position.clone().sub( scope.target );
@@ -166,22 +137,20 @@ module.exports = function ( object, domElement ) {
 			// half of the fov is center to top of screen
 			targetDistance *= Math.tan( (scope.object.fov/2) * Math.PI / 180.0 );
 			// we actually don't use screenWidth, since perspective camera is fixed to screen height
-			scope.panLeft( 2 * delta.x * targetDistance / element.clientHeight );
-			scope.panUp( 2 * delta.y * targetDistance / element.clientHeight );
-
-		} else if ( scope.object.top !== undefined ) {
-
+			scope.panLeft( 2 * delta.x * targetDistance / scope.domElement.height );
+			scope.panUp( 2 * delta.y * targetDistance / scope.domElement.height );
+		}
+		else if ( scope.object.top !== undefined )
+		{
 			// orthographic
-			scope.panLeft( delta.x * (scope.object.right - scope.object.left) / element.clientWidth );
-			scope.panUp( delta.y * (scope.object.top - scope.object.bottom) / element.clientHeight );
-
-		} else {
-
+			scope.panLeft( delta.x * (scope.object.right - scope.object.left) / scope.domElement.width );
+			scope.panUp( delta.y * (scope.object.top - scope.object.bottom) / scope.domElement.height );
+		}
+		else
+		{
 			// camera neither orthographic or perspective - warn user
 			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
-
 		}
-
 	};
 
 	this.dollyIn = function ( dollyScale ) {
@@ -308,37 +277,32 @@ module.exports = function ( object, domElement ) {
 
 		}
 
-		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		scope.domElement.addEventListener( 'mousemove', onMouseMove, false );
-		scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
+		document.addEventListener( 'mousemove', onMouseMove, false );
+		document.addEventListener( 'mouseup', onMouseUp, false );
 
 	}
 
 	function onMouseMove( event ) {
 
-		if ( scope.enabled === false ) return;
+		if ( scope.enabled === false ) { return; }
 
 		event.preventDefault();
 
-		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
-
 		if ( state === STATE.ROTATE ) {
-
-			if ( scope.noRotate === true ) return;
+			if ( scope.noRotate === true ) { return; }
 
 			rotateEnd.set( event.clientX, event.clientY );
 			rotateDelta.subVectors( rotateEnd, rotateStart );
 
 			// rotating across whole screen goes 360 degrees around
-			scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+			scope.rotateLeft( 2 * Math.PI * rotateDelta.x / scope.domElement.width * scope.rotateSpeed );
 			// rotating up and down along whole screen attempts to go 360, but limited to 180
-			scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+			scope.rotateUp( 2 * Math.PI * rotateDelta.y / scope.domElement.height * scope.rotateSpeed );
 
 			rotateStart.copy( rotateEnd );
 
 		} else if ( state === STATE.DOLLY ) {
-
-			if ( scope.noZoom === true ) return;
+			if ( scope.noZoom === true ) { return; }
 
 			dollyEnd.set( event.clientX, event.clientY );
 			dollyDelta.subVectors( dollyEnd, dollyStart );
@@ -356,8 +320,7 @@ module.exports = function ( object, domElement ) {
 			dollyStart.copy( dollyEnd );
 
 		} else if ( state === STATE.PAN ) {
-
-			if ( scope.noPan === true ) return;
+			if ( scope.noPan === true ) { return; }
 
 			panEnd.set( event.clientX, event.clientY );
 			panDelta.subVectors( panEnd, panStart );
@@ -368,26 +331,25 @@ module.exports = function ( object, domElement ) {
 
 		}
 
-		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		scope.update();
-
 	}
 
 	function onMouseUp( /* event */ ) {
 
-		if ( scope.enabled === false ) return;
+		if ( scope.enabled === false ) { return; }
 
-		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		scope.domElement.removeEventListener( 'mousemove', onMouseMove, false );
-		scope.domElement.removeEventListener( 'mouseup', onMouseUp, false );
+		document.removeEventListener( 'mousemove', onMouseMove, false );
+		document.removeEventListener( 'mouseup', onMouseUp, false );
 
 		state = STATE.NONE;
 
 	}
 
 	function onMouseWheel( event ) {
-
-		if ( scope.enabled === false || scope.noZoom === true ) return;
+		// this is needed when the program is inside an iframe
+		// to prevent scrolling the whole page
+		event.preventDefault();
+		if ( scope.enabled === false ) { return; }
+		if ( scope.noZoom === true ) { return; }
 
 		var delta = 0;
 
@@ -420,34 +382,20 @@ module.exports = function ( object, domElement ) {
 		if ( scope.noPan === true ) { return; }
 
 		// pan a pixel - I guess for precise positioning?
-		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		var needUpdate = false;
-		
 		switch ( event.keyCode ) {
 
 			case scope.keys.UP:
-				scope.pan( new THREE.Vector2( 0, scope.keyPanSpeed ) );
-				needUpdate = true;
+				scope.pan( new THREE.Vector2( 0, 1 ) );
 				break;
 			case scope.keys.BOTTOM:
-				scope.pan( new THREE.Vector2( 0, -scope.keyPanSpeed ) );
-				needUpdate = true;
+				scope.pan( new THREE.Vector2( 0, -1 ) );
 				break;
 			case scope.keys.LEFT:
-				scope.pan( new THREE.Vector2( scope.keyPanSpeed, 0 ) );
-				needUpdate = true;
+				scope.pan( new THREE.Vector2( 1, 0 ) );
 				break;
 			case scope.keys.RIGHT:
-				scope.pan( new THREE.Vector2( -scope.keyPanSpeed, 0 ) );
-				needUpdate = true;
+				scope.pan( new THREE.Vector2( -1, 0 ) );
 				break;
-		}
-
-		// Greggman fix: https://github.com/greggman/three.js/commit/fde9f9917d6d8381f06bf22cdff766029d1761be
-		if ( needUpdate ) {
-
-			scope.update();
-
 		}
 
 	}
@@ -498,8 +446,6 @@ module.exports = function ( object, domElement ) {
 		event.preventDefault();
 		event.stopPropagation();
 
-		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
-
 		switch ( event.touches.length ) {
 
 			case 1: // one-fingered touch: rotate
@@ -510,9 +456,9 @@ module.exports = function ( object, domElement ) {
 				rotateDelta.subVectors( rotateEnd, rotateStart );
 
 				// rotating across whole screen goes 360 degrees around
-				scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+				scope.rotateLeft( 2 * Math.PI * rotateDelta.x / scope.domElement.width * scope.rotateSpeed );
 				// rotating up and down along whole screen attempts to go 360, but limited to 180
-				scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+				scope.rotateUp( 2 * Math.PI * rotateDelta.y / scope.domElement.height * scope.rotateSpeed );
 
 				rotateStart.copy( rotateEnd );
 				break;
