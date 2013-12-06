@@ -16,11 +16,11 @@ module.exports = function(grid) {
     //indicates how many clockwise rotations it takes to get to the original
     this.rotateLookup = {
         '4' : {
-            'original' : 2,
+            'original' : 1,
             'rotates' : 3
         },
         '16' : {
-            'original' : 2,
+            'original' : 1,
             'rotates' : 2
         },
         '20' : {
@@ -32,7 +32,7 @@ module.exports = function(grid) {
             'rotates' : 3
         },
         '64' : {
-            'original' : 2,
+            'original' : 1,
             'rotates' : 1
         },
         '65' : {
@@ -178,6 +178,7 @@ module.exports = function(grid) {
                     var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
                     if (test) {
                         jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',this.addModelToScene);
+                        console.log('Somehow loading a model!');
                     }
                 } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
                     shape_temp = this.drawShape(grid[x][y].shape);
@@ -202,7 +203,7 @@ module.exports = function(grid) {
            sphereMaterial);
 
         // add the sphere to the scene
-        this.scene.add(sphere);
+        //this.scene.add(sphere);
 
         // and the camera
         this.scene.add(camera);
@@ -302,10 +303,6 @@ module.exports = function(grid) {
                 binaryArray.push(0);
             }
         }
-        //binaryArray.reverse();
-        
-        console.log('About to check loneliness on ' + binaryArray.join(''));
-
         
         //If the option is marked, we can eliminate corner pieces that also
         //don't have siblings around them, as this means they won't be touching
@@ -321,8 +318,6 @@ module.exports = function(grid) {
                 }
             }
         }
-        
-        console.log('Post-lonely array is ' + binaryArray.join(''));
         
         shape = binaryArray.join('');
 
