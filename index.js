@@ -138,8 +138,8 @@ module.exports = function(grid) {
         
         this.config = config;
         
-        var WIDTH = 800,
-            HEIGHT = 600;
+        var WIDTH = 1200,
+            HEIGHT = 800;
 
         // set some camera attributes
         var VIEW_ANGLE = 45,
@@ -186,25 +186,24 @@ module.exports = function(grid) {
                 }
             }
         }
-    /*
-        // create the sphere's material
-        var sphereMaterial = new THREE.MeshLambertMaterial(
-        {
-            color: 0xCC0000
-        });
-
-        // set up the sphere vars
-        var radius = 50, segments = 16, rings = 16;
-
-        // create a new mesh with sphere geometry -
-        // we will cover the sphereMaterial next!
-        var sphere = new THREE.Mesh(
-           new THREE.SphereGeometry(radius, segments, rings),
-           sphereMaterial);
-
-        // add the sphere to the scene
-        //this.scene.add(sphere);
-*/
+        
+        /*
+        var x = 0;
+        var y = 3;
+        
+        grid[x][y].shape = this.findShape(x,y, true);
+        try {
+            var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
+            if (test) {
+                jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',this.addModelToScene);
+                console.log('Somehow loading a model!');
+            }
+        } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
+            shape_temp = this.drawShape(grid[x][y].shape);
+            this.addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
+        }
+        */
+        
         // and the camera
         this.scene.add(camera);
 
@@ -314,7 +313,6 @@ module.exports = function(grid) {
                     && (binaryArray[(i+1)%8] === 0 || binaryArray[(i-1)%8] === 0)
                     ) {
                     binaryArray[i] = 0;
-                    console.log('Lonely corner ' + i + ' fixed!');
                 }
             }
         }
@@ -374,7 +372,7 @@ module.exports = function(grid) {
                 xr = (x - xm) * cos(a) - (y - ym) * sin(a)   + xm,
                 yr = (x - xm) * sin(a) + (y - ym) * cos(a)   + ym;
 
-            return {'x':xr, 'y':yr};
+            return {'x':Math.round(xr), 'y':Math.round(yr)};
         }
     }
     this.addModelToScene = function(geometry, materials, position) {
