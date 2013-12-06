@@ -5,6 +5,8 @@ module.exports = function(grid) {
     //  the rendering field, viewed from the top-down.
 
     THREE = require('three'); //Assigns the renderer to THREE automatically
+    THREE.OrbitControls = require('./OrbitControls.js');
+    
     fs = require('fs');
     
     this.grid = grid; //We use it in virtually every function, so assign it.
@@ -159,6 +161,7 @@ module.exports = function(grid) {
                                         ASPECT,
                                         NEAR,
                                         FAR  );
+        this.controls = THREE.OrbitControls(camera, renderer.domElement);
         this.scene = new THREE.Scene();
         var shape_temp;
 
