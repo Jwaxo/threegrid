@@ -1,6 +1,9 @@
 var assert = require('assert');
 var ThreeGrid = require('./index.js');
 
+//This is all best tested using beefy, for in-browser stuff.
+//More a personal note than anything.
+
 //First we need some sort of grid. Grids are arranged in an [x][y] fashion made
 //up of sequential, positive integers, with 0,0 being the bottom-left corner,
 //since JS can't have negative array keys without some major problems.
