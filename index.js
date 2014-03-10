@@ -161,8 +161,8 @@ module.exports = function(grid) {
                                         ASPECT,
                                         NEAR,
                                         FAR  );
-        this.controls = new THREE.OrbitControls(camera, renderer.domElement);
-        this.controls.addEventListener( 'change', render );
+        //this.controls = new THREE.OrbitControls(camera, renderer.domElement);
+        //this.controls.addEventListener( 'change', render );
         this.scene = new THREE.Scene();
         var shape_temp;
 
@@ -234,7 +234,7 @@ module.exports = function(grid) {
         function animate() {
 
             requestAnimationFrame( animate );
-            this.controls.update();
+            //this.controls.update();
 
         }
         console.log('rendered!');
