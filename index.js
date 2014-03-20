@@ -157,10 +157,22 @@ module.exports = function(grid) {
         var container = document.createElement('div');
         document.body.appendChild(container);
 
-        scene = new THREE.Scene();
+        var scene = new THREE.Scene();
+		var group = new THREE.Object3D();
+		
+		scene.add(group);
+		
+		var targetRotation = 0;
+		var targetRotationOnMouseDown = 0;
+
+		var mouseX = 0;
+		var mouseXOnMouseDown = 0;
+		
+		var windowHalfX = WIDTH / 2;
+		var windowHalfY = HEIGHT / 2;
+		
         var shape_temp;
         
-		/*
         for (var x=0;x<grid.length;x++) {
             for (var y=0;y<grid[x].length;y++) {
                 grid[x][y].shape = this.findShape(x,y, true);
@@ -175,22 +187,6 @@ module.exports = function(grid) {
                     addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
                 }
             }
-        }
-		*/
-        
-        var x = 0;
-        var y = 3;
-        
-        grid[x][y].shape = this.findShape(x,y, true);
-        try {
-            var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
-            if (test) {
-                jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',addModelToScene);
-                console.log('Somehow loading a model!');
-            }
-        } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
-            shape_temp = this.drawShape(grid[x][y].shape);
-            addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
         }
 		
         // create a WebGL renderer, camera
@@ -227,10 +223,20 @@ module.exports = function(grid) {
 
         // draw!
 		container.appendChild(renderer.domElement);
+		
+		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+		document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+		document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+			
         animate();
+		
+        console.log('rendered!');
+    
+        return renderer;
         
         function render() {
 
+			group.rotation.y += ( targetRotation - group.rotation.y ) * 0.05;
             renderer.render(scene, camera);
 
         }
@@ -247,11 +253,54 @@ module.exports = function(grid) {
 			console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
 			model.position.set(position.x*7,position.y*7,0);
 			model.scale.set(10,10,10);
-			scene.add(model);
+			group.add(model);
 		}
-        console.log('rendered!');
-    
-        return renderer;
+		function onDocumentMouseDown(event) {
+			event.preventDefault();
+
+			document.addEventListener('mousemove', onDocumentMouseMove, false);
+			document.addEventListener('mouseup', onDocumentMouseUp, false);
+			document.addEventListener('mouseout', onDocumentMouseOut, false);
+
+			mouseXOnMouseDown = event.clientX - windowHalfX;
+			targetRotationOnMouseDown = targetRotation;
+		}
+
+		function onDocumentMouseMove(event) {
+			mouseX = event.clientX - windowHalfX;
+
+			targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+		}
+
+		function onDocumentMouseUp(event) {
+			document.removeEventListener('mousemove', onDocumentMouseMove, false);
+			document.removeEventListener('mouseup', onDocumentMouseUp, false);
+			document.removeEventListener('mouseout', onDocumentMouseOut, false);
+		}
+
+		function onDocumentMouseOut(event) {
+			document.removeEventListener('mousemove', onDocumentMouseMove, false);
+			document.removeEventListener('mouseup', onDocumentMouseUp, false);
+			document.removeEventListener('mouseout', onDocumentMouseOut, false);
+		}
+
+		function onDocumentTouchStart(event) {
+			if (event.touches.length == 1) {
+				event.preventDefault();
+
+				mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
+				targetRotationOnMouseDown = targetRotation;
+			}
+		}
+
+		function onDocumentTouchMove(event) {
+			if (event.touches.length == 1) {
+				event.preventDefault();
+
+				mouseX = event.touches[ 0 ].pageX - windowHalfX;
+				targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
+			}
+		}
     }
     
     this.findShape = function(x,y,checkCorners) {
