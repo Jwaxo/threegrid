@@ -1,13 +1,16 @@
 module.exports = function(grid) {
     //'grid' must be a sequentially-keyed array of sequentially-keyed arrays
-    //  that correspond to some sort of grid. So grid[3][4] refers to a
-    //  gridpoint that is three to the right and four below the top-left of
-    //  the rendering field, viewed from the top-down.
+    //that correspond to some sort of grid. So grid[3][4] refers to a gridpoint
+	//that is three to the right and four below the top-left of the rendering
+	//field, viewed from the top down.
 
     THREE = require('three'); //Assigns the renderer to THREE automatically
     THREE.OrbitControls = require('./OrbitControls.js');
     
-    fs = require('fs');
+    fs = require('fs'); //fs is used to load physical models, located in the
+	//  config-defined "assetlocation" folder. A model must be named after the
+	//  shape that it replaces, as opposed to the basic placeholder we define in
+	//  default_shapes.js.
     
     this.grid = grid; //We use it in virtually every function, so assign it.
     this.shapesLookup = require('./default_shapes.js'); //If a file isn't found
@@ -136,7 +139,7 @@ module.exports = function(grid) {
         //  scale - value to multiply the standard three scale by
         //  type - designates the field in gridpoints that states similar types
         //  asset_location - if a gridpoint has a folder assigned to its type,
-        //      where to look. Requires the fs module to be installed.
+        //    where to look. Requires the fs module to be installed.
         
         this.config = config;
         
@@ -154,45 +157,27 @@ module.exports = function(grid) {
         var container = document.createElement('div');
         document.body.appendChild(container);
 
-        // create a WebGL renderer, camera
-        // and a scene
-        var renderer = new THREE.WebGLRenderer();
-        var camera = new THREE.PerspectiveCamera(  VIEW_ANGLE,
-                                        ASPECT,
-                                        NEAR,
-                                        FAR  );
-        //this.controls = new THREE.OrbitControls(camera, renderer.domElement);
-        //this.controls.addEventListener( 'change', render );
-        this.scene = new THREE.Scene();
+        scene = new THREE.Scene();
         var shape_temp;
-
-        // the camera starts at 0,0,0 so pull it back
-        camera.position.z = 300;
-        camera.position.y = 40;
-
-        // start the renderer
-        renderer.setSize(WIDTH, HEIGHT);
-
-        // attach the render-supplied DOM element
-        container.appendChild(renderer.domElement);
         
+		/*
         for (var x=0;x<grid.length;x++) {
             for (var y=0;y<grid[x].length;y++) {
                 grid[x][y].shape = this.findShape(x,y, true);
                 try {
                     var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
                     if (test) {
-                        jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',this.addModelToScene);
+                        jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',addModelToScene);
                         console.log('Somehow loading a model!');
                     }
                 } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
                     shape_temp = this.drawShape(grid[x][y].shape);
-                    this.addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
+                    addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
                 }
             }
         }
+		*/
         
-        /*
         var x = 0;
         var y = 3;
         
@@ -200,20 +185,37 @@ module.exports = function(grid) {
         try {
             var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
             if (test) {
-                jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',this.addModelToScene);
+                jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',addModelToScene);
                 console.log('Somehow loading a model!');
             }
         } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
             shape_temp = this.drawShape(grid[x][y].shape);
-            this.addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
+            addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
         }
-        */
-        
+		
+        // create a WebGL renderer, camera
+        // and a scene
+        var renderer = new THREE.WebGLRenderer();
+        var camera = new THREE.PerspectiveCamera(  VIEW_ANGLE,
+                                        ASPECT,
+                                        NEAR,
+                                        FAR  );
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        document.addEventListener('change', render);
+		
+        // the camera starts at 0,0,0 so pull it back
+        camera.position.z = 300;
+        camera.position.y = 40;
+
+        // start the renderer
+		renderer.setClearColor(0xf0f0f0);
+        renderer.setSize(WIDTH, HEIGHT);
+
         // and the camera
-        this.scene.add(camera);
+        scene.add(camera);
 
         // create a point light
-        var pointLight = new THREE.PointLight( 0xFFFFFF );
+        var pointLight = new THREE.PointLight(0xFFFFFF);
 
         // set its position
         pointLight.position.x = 10;
@@ -221,22 +223,32 @@ module.exports = function(grid) {
         pointLight.position.z = 130;
 
         // add to the scene
-        this.scene.add(pointLight);
+        scene.add(pointLight);
 
         // draw!
+		container.appendChild(renderer.domElement);
         animate();
         
         function render() {
 
-            renderer.render( this.scene, camera );
+            renderer.render(scene, camera);
 
         }
         function animate() {
 
-            requestAnimationFrame( animate );
-            //this.controls.update();
+            requestAnimationFrame(animate);
+            //controls.update();
+			render();
 
         }
+		function addModelToScene(geometry, materials, position) {
+			var material = new THREE.MeshBasicMaterial(materials);
+			var model = new THREE.Mesh(geometry, material);
+			console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
+			model.position.set(position.x*7,position.y*7,0);
+			model.scale.set(10,10,10);
+			scene.add(model);
+		}
         console.log('rendered!');
     
         return renderer;
@@ -373,7 +385,9 @@ module.exports = function(grid) {
             material: 0, extrudeMaterial: 1
         };
         
-        var threeGeometry = new THREE.ExtrudeGeometry(threeShape, extrusionSettings);
+		var threeGeometry = threeShape.extrude(extrusionSettings);
+		console.log(threeGeometry);
+        //var threeGeometry = new THREE.ExtrudeGeometry(threeShape, extrusionSettings);
             
         return threeGeometry;
     
@@ -391,16 +405,7 @@ module.exports = function(grid) {
 
             return {'x':Math.round(xr), 'y':Math.round(yr)};
         }
-    }
-    this.addModelToScene = function(geometry, materials, position) {
-        var material = new THREE.MeshBasicMaterial( materials );
-        var model = new THREE.Mesh( geometry, material );
-        console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
-        model.position.set(position.x*7,position.y*7,0);
-        model.scale.set(10,10,10);
-        this.scene.add( model );
-    }
-    
+    }    
     
     return this;
 }

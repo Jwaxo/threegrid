@@ -135,7 +135,7 @@ var grid = [
 //other than "what order in the array are you."
 
 var config = {
-    "size" : "0", //height/size multiplier
+    "size" : "0", //height/size multiplier if greater than 0
     "type" : "type", //what property we're calling the "grouper"
     "asset_location" : "./examples/shapes",
     "render_width" : "800", //view grid width in pixels
@@ -145,5 +145,3 @@ var config = {
 var map = new ThreeGrid(grid);
 
 var renderedMap = map.renderGrid(config);
-
-
