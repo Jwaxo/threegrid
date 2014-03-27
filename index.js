@@ -163,11 +163,15 @@ module.exports = function(grid) {
 		
 		scene.add(group);
 		
-		var targetRotation = 0;
-		var targetRotationOnMouseDown = 0;
+		var targetRotationX = 0,
+			targetRotationY = 0;
+		var targetRotationXOnMouseDown = 0,
+			targetRotationYOnMouseDown = 0;
 
-		var mouseX = 0;
-		var mouseXOnMouseDown = 0;
+		var mouseX = 0,
+			mouseY = 0;
+		var mouseXOnMouseDown = 0,
+			mouseYOnMouseDown = 0;
 		
 		var windowHalfX = WIDTH / 2;
 		var windowHalfY = HEIGHT / 2;
@@ -237,24 +241,21 @@ module.exports = function(grid) {
         return renderer;
         
         function render() {
-
-			group.rotation.y += ( targetRotation - group.rotation.y ) * 0.05;
+			group.rotation.x += (targetRotationY - group.rotation.x) * 0.05;
+			group.rotation.y += (targetRotationX - group.rotation.y) * 0.05;
             renderer.render(scene, camera);
-
         }
         function animate() {
-
             requestAnimationFrame(animate);
             //controls.update();
 			render();
-
         }
 		function addModelToScene(geometry, materials, position) {
 			var material = new THREE.MeshBasicMaterial(materials);
 			var model = new THREE.Mesh(geometry, material);
-			console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
-			model.scale.set(SCALE,SCALE,SCALE/2);
-			model.position.set(position.x*6*SCALE,position.y*6*SCALE,0);
+			console.log('Putting mesh at ' + position.x * 7 + ', ' + position.y * 7);
+			model.scale.set(SCALE, SCALE, SCALE / 2); //Just for looks, halve heights
+			model.position.set(position.x * 6 * SCALE, position.y * 6 * SCALE, 0); //For some reason 6 is the magic number
 			group.add(model);
 		}
 		function onDocumentMouseDown(event) {
@@ -265,13 +266,16 @@ module.exports = function(grid) {
 			document.addEventListener('mouseout', onDocumentMouseOut, false);
 
 			mouseXOnMouseDown = event.clientX - windowHalfX;
-			targetRotationOnMouseDown = targetRotation;
+			mouseYOnMouseDown = event.clientY - windowHalfY;
+			targetRotationXOnMouseDown = targetRotationX;
+			targetRotationYOnMouseDown = targetRotationY;
 		}
 
 		function onDocumentMouseMove(event) {
 			mouseX = event.clientX - windowHalfX;
-
-			targetRotation = targetRotationOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+			mouseY = event.clientY - windowHalfY;
+			targetRotationX = targetRotationXOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+			targetRotationY = targetRotationYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.02;
 		}
 
 		function onDocumentMouseUp(event) {
@@ -289,23 +293,25 @@ module.exports = function(grid) {
 		function onDocumentTouchStart(event) {
 			if (event.touches.length == 1) {
 				event.preventDefault();
-
 				mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
-				targetRotationOnMouseDown = targetRotation;
+				mouseYOnMouseDown = event.touches[ 0 ].pageY - windowHalfY;
+				targetRotationXOnMouseDown = targetRotationX;
+				targetRotationYOnMouseDown = targetRotationY;
 			}
 		}
 
 		function onDocumentTouchMove(event) {
 			if (event.touches.length == 1) {
 				event.preventDefault();
-
-				mouseX = event.touches[ 0 ].pageX - windowHalfX;
-				targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
+				mouseX = event.touches[0].pageX - windowHalfX;
+				targetRotationX = targetRotationYOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
+				mouseY = event.touches[0].pageY - windowHalfY;
+				targetRotationY = targetRotationYOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.05;
 			}
 		}
     }
     
-    this.findShape = function(x,y,checkCorners) {
+    this.findShape = function(x, y, checkCorners) {
         //Returns any of the 255* possible shapes that a tile might take given
         //its surrounding siblings. The number when converted to binary refers
         //to each of the eight surrounding tiles starting from the top-left and
@@ -424,7 +430,7 @@ module.exports = function(grid) {
             if (parentShape.hasOwnProperty('rotates')) {
                 shape_array[i] = rotate(shape_array[i].x, shape_array[i].y, 3, 3, 90 * (parentShape.rotates));
             }
-            console.log('adding coordinate '+shape_array[i].x+','+shape_array[i].y);
+            //console.log('adding coordinate '+shape_array[i].x+','+shape_array[i].y);
             shapePoints.push(new THREE.Vector2(shape_array[i].x, shape_array[i].y));
         }
         
@@ -437,8 +443,6 @@ module.exports = function(grid) {
         };
         
 		var threeGeometry = threeShape.extrude(extrusionSettings);
-		console.log(threeGeometry);
-        //var threeGeometry = new THREE.ExtrudeGeometry(threeShape, extrusionSettings);
             
         return threeGeometry;
     
