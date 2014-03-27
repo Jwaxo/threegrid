@@ -253,8 +253,8 @@ module.exports = function(grid) {
 			var material = new THREE.MeshBasicMaterial(materials);
 			var model = new THREE.Mesh(geometry, material);
 			console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
-			model.position.set(position.x*7*SCALE,position.y*7*SCALE,0);
 			model.scale.set(SCALE,SCALE,SCALE/2);
+			model.position.set(position.x*6*SCALE,position.y*6*SCALE,0);
 			group.add(model);
 		}
 		function onDocumentMouseDown(event) {
