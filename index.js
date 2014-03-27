@@ -162,11 +162,13 @@ module.exports = function(grid) {
 		var group = new THREE.Object3D();
 		
 		scene.add(group);
+		group.position.x = 0 - 100;
+		group.position.y = 0 - 100;
 		
-		var targetRotationX = 0,
-			targetRotationY = 0;
-		var targetRotationXOnMouseDown = 0,
-			targetRotationYOnMouseDown = 0;
+		var targetMoveX = 0,
+			targetMoveY = 0;
+		var targetMoveXOnMouseDown = 0,
+			targetMoveYOnMouseDown = 0;
 
 		var mouseX = 0,
 			mouseY = 0;
@@ -201,13 +203,12 @@ module.exports = function(grid) {
                                         ASPECT,
                                         NEAR,
                                         FAR  );
-        var controls = new THREE.OrbitControls(camera, renderer.domElement);
         document.addEventListener('change', render);
 		
         // the camera starts at 0,0,0 so pull it back
         camera.position.z = 500;
-		camera.position.x = 150;
-        camera.position.y = 150;
+		camera.position.x = 0;
+        camera.position.y = 0;
 
         // start the renderer
 		renderer.setClearColor(0xf0f0f0);
@@ -230,9 +231,9 @@ module.exports = function(grid) {
         // draw!
 		container.appendChild(renderer.domElement);
 		
-		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-		document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-		document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+		document.addEventListener('mousedown', onDocumentMouseDown, false);
+		document.addEventListener('touchstart', onDocumentTouchStart, false);
+		document.addEventListener('touchmove', onDocumentTouchMove, false);
 			
         animate();
 		
@@ -241,13 +242,12 @@ module.exports = function(grid) {
         return renderer;
         
         function render() {
-			group.rotation.x += (targetRotationY - group.rotation.x) * 0.05;
-			group.rotation.y += (targetRotationX - group.rotation.y) * 0.05;
+			camera.position.y += (10 * targetMoveY - camera.position.y) * .05;
+			camera.position.x -= (10 * targetMoveX + camera.position.x) * .05;
             renderer.render(scene, camera);
         }
         function animate() {
             requestAnimationFrame(animate);
-            //controls.update();
 			render();
         }
 		function addModelToScene(geometry, materials, position) {
@@ -267,15 +267,15 @@ module.exports = function(grid) {
 
 			mouseXOnMouseDown = event.clientX - windowHalfX;
 			mouseYOnMouseDown = event.clientY - windowHalfY;
-			targetRotationXOnMouseDown = targetRotationX;
-			targetRotationYOnMouseDown = targetRotationY;
+			targetMoveXOnMouseDown = targetMoveX;
+			targetMoveYOnMouseDown = targetMoveY;
 		}
 
 		function onDocumentMouseMove(event) {
 			mouseX = event.clientX - windowHalfX;
 			mouseY = event.clientY - windowHalfY;
-			targetRotationX = targetRotationXOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
-			targetRotationY = targetRotationYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.02;
+			targetMoveX = targetMoveXOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.02;
+			targetMoveY = targetMoveYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.02;
 		}
 
 		function onDocumentMouseUp(event) {
@@ -295,8 +295,8 @@ module.exports = function(grid) {
 				event.preventDefault();
 				mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
 				mouseYOnMouseDown = event.touches[ 0 ].pageY - windowHalfY;
-				targetRotationXOnMouseDown = targetRotationX;
-				targetRotationYOnMouseDown = targetRotationY;
+				targetMoveXOnMouseDown = targetMoveX;
+				targetMoveYOnMouseDown = targetMoveY;
 			}
 		}
 
@@ -304,9 +304,9 @@ module.exports = function(grid) {
 			if (event.touches.length == 1) {
 				event.preventDefault();
 				mouseX = event.touches[0].pageX - windowHalfX;
-				targetRotationX = targetRotationYOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
+				targetMoveX = targetMoveYOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
 				mouseY = event.touches[0].pageY - windowHalfY;
-				targetRotationY = targetRotationYOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.05;
+				targetMoveY = targetMoveYOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.05;
 			}
 		}
     }
