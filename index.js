@@ -6,6 +6,16 @@ module.exports = function(grid) {
 
     THREE = require('three'); //Assigns the renderer to THREE automatically
     THREE.OrbitControls = require('./OrbitControls.js');
+	
+	var WIDTH = 1200,
+		HEIGHT = 800,
+		SCALE = 10;
+
+	// set some camera attributes
+	var VIEW_ANGLE = 45,
+		ASPECT = WIDTH / HEIGHT,
+		NEAR = 0.1,
+		FAR = 10000;
     
     fs = require('fs'); //fs is used to load physical models, located in the
 	//  config-defined "assetlocation" folder. A model must be named after the
@@ -142,15 +152,6 @@ module.exports = function(grid) {
         //    where to look. Requires the fs module to be installed.
         
         this.config = config;
-        
-        var WIDTH = 1200,
-            HEIGHT = 800;
-
-        // set some camera attributes
-        var VIEW_ANGLE = 45,
-            ASPECT = WIDTH / HEIGHT,
-            NEAR = 0.1,
-            FAR = 10000;
 
         // get the DOM element to attach to
         // - assume we've got jQuery to hand
@@ -200,8 +201,9 @@ module.exports = function(grid) {
         document.addEventListener('change', render);
 		
         // the camera starts at 0,0,0 so pull it back
-        camera.position.z = 300;
-        camera.position.y = 40;
+        camera.position.z = 500;
+		camera.position.x = 150;
+        camera.position.y = 150;
 
         // start the renderer
 		renderer.setClearColor(0xf0f0f0);
@@ -251,8 +253,8 @@ module.exports = function(grid) {
 			var material = new THREE.MeshBasicMaterial(materials);
 			var model = new THREE.Mesh(geometry, material);
 			console.log('Putting mesh at ' + position.x*7 + ', ' + position.y*7);
-			model.position.set(position.x*7,position.y*7,0);
-			model.scale.set(10,10,10);
+			model.position.set(position.x*7*SCALE,position.y*7*SCALE,0);
+			model.scale.set(SCALE,SCALE,SCALE/2);
 			group.add(model);
 		}
 		function onDocumentMouseDown(event) {
