@@ -15,70 +15,85 @@ var grid = [
     [
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "0"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "1"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "2"
         },
         {
             "type" : "road",
+			"color": 0x000000,
             "id"   : "3"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "4"
         }
     ],
     [
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "5"
         },
         {
             "type" : "school",
+			"color": 0xFFCC00,
             "id"   : "6"
         },
         {
             "type" : "school",
+			"color": 0xFFCC00,
             "id"   : "7",
             "parentid" : "6"
         },
         {
             "type" : "road",
+			"color": 0x000000,
             "id"   : "8",
             "parentid" : "3"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "9"
         }
     ],
     [
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "10"
         },
         {
             "type" : "school",
+			"color": 0xFFCC00,
             "id"   : "11",
             "parentid" : "6"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "12"
         },
         {
             "type" : "road",
+			"color": 0x000000,
             "id"   : "13",
             "parentid" : "3"
         },
         {
             "type" : "house",
+			"color": 0xFF0000,
             "id"   : "14",
             "parentid" : "19"
         }
@@ -86,46 +101,56 @@ var grid = [
     [
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "15"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "16"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "17"
         },
         {
             "type" : "road",
+			"color": 0x000000,
             "id"   : "18",
             "parentid" : "3"
         },
         {
             "type" : "house",
+			"color": 0xFF0000,
             "id"   : "19"
         }
     ],
     [
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "20"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "21"
         },
         {
             "type" : "tree",
+			"color": 0x00FFFF,
             "id"   : "22"
         },
         {
             "type" : "road",
+			"color": 0x000000,
             "id"   : "23",
             "parentid" : "3"
         },
         {
             "type" : "park",
+			"color": 0x00FF00,
             "id"   : "24"
         }
     ]

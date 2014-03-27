@@ -185,7 +185,7 @@ module.exports = function(grid) {
                     }
                 } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
                     shape_temp = this.drawShape(grid[x][y].shape);
-                    addModelToScene(shape_temp, {color: 0xCC0000, wireframe: true}, {'x':x,'y':y});
+                    addModelToScene(shape_temp, {color: grid[x][y].color, wireframe: true}, {'x':x,'y':y});
                 }
             }
         }
@@ -428,7 +428,7 @@ module.exports = function(grid) {
             shapePoints.push(new THREE.Vector2(shape_array[i].x, shape_array[i].y));
         }
         
-        var threeShape = new THREE.Shape(shapePoints );
+        var threeShape = new THREE.Shape(shapePoints);
         
         var extrusionSettings = {
             amount: 6, curveSegments: 3,
