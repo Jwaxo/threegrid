@@ -293,8 +293,8 @@ module.exports = function(grid) {
 		function onDocumentTouchStart(event) {
 			if (event.touches.length == 1) {
 				event.preventDefault();
-				mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
-				mouseYOnMouseDown = event.touches[ 0 ].pageY - windowHalfY;
+				mouseXOnMouseDown = event.touches[0].pageX - windowHalfX;
+				mouseYOnMouseDown = event.touches[0].pageY - windowHalfY;
 				targetMoveXOnMouseDown = targetMoveX;
 				targetMoveYOnMouseDown = targetMoveY;
 			}
@@ -304,9 +304,9 @@ module.exports = function(grid) {
 			if (event.touches.length == 1) {
 				event.preventDefault();
 				mouseX = event.touches[0].pageX - windowHalfX;
-				targetMoveX = targetMoveYOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
+				targetMoveX = targetMoveYOnMouseDown + (mouseX - mouseXOnMouseDown) * 0.05;
 				mouseY = event.touches[0].pageY - windowHalfY;
-				targetMoveY = targetMoveYOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.05;
+				targetMoveY = targetMoveYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.05;
 			}
 		}
     }
@@ -325,7 +325,7 @@ module.exports = function(grid) {
         //will not affect the shape of the center point, the one we care about.
         var shape = '';
         var binaryArray = [];
-        var cornersRef = [6,4,2,0]; //These ones are in the corners
+        var cornersRef = [6, 4, 2, 0]; //These ones are in the corners
         //Because the grid is arranged in HTML-render order to ease my mind at
         //a later date, y is inverted from the traditional thinking--higher
         //numbers are lower down.
@@ -396,7 +396,7 @@ module.exports = function(grid) {
             for (var i=0;i<8;i++) {
                 if (binaryArray[i] === 1
                     && cornersRef.indexOf(i) > -1
-                    && (binaryArray[(i+1)%8] === 0 || binaryArray[(i-1)%8] === 0)
+                    && (binaryArray[(i + 1) % 8] === 0 || binaryArray[(i - 1) % 8] === 0)
                     ) {
                     binaryArray[i] = 0;
                 }
@@ -416,33 +416,43 @@ module.exports = function(grid) {
         var shape_array = [];
         var shapePoints = [];
         var parentShape = {};
+		var threeShape,
+			threeGeometry;
+        var extrusionSettings = {
+            amount : 6,
+			curveSegments : 3,
+            bevelThickness : 1,
+			bevelSize : 2,
+			bevelEnabled : false,
+            material : 0,
+			extrudeMaterial : 1
+        };
     
         if (this.rotateLookup.hasOwnProperty(shape)) {
+			//Look in the rotate lookup to see if this shape is one of our
+			//default shapes, just rotated. If so, run that shape for our
+			//coordinates, then rotate the amount our original shape says to
+			//in the rotate lookup.
             parentShape = this.rotateLookup[shape];
+			original = shape;
             shape = parentShape.original;
         }
         try {
-            shape_array = this.shapesLookup[shape];
+            shape_array = this.shapesLookup[shape]; //Get our array of coords.
         } catch(error) {
-            console.log (error);
+            console.log(error);
         }
         for (var i=0;i<shape_array.length;i++) {
             if (parentShape.hasOwnProperty('rotates')) {
+				console.log('Rotating shape ' + parentShape.original + ' ' + parentShape.rotates + ' times to become ' + original);
                 shape_array[i] = rotate(shape_array[i].x, shape_array[i].y, 3, 3, 90 * (parentShape.rotates));
             }
             //console.log('adding coordinate '+shape_array[i].x+','+shape_array[i].y);
             shapePoints.push(new THREE.Vector2(shape_array[i].x, shape_array[i].y));
         }
         
-        var threeShape = new THREE.Shape(shapePoints);
-        
-        var extrusionSettings = {
-            amount: 6, curveSegments: 3,
-            bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-            material: 0, extrudeMaterial: 1
-        };
-        
-		var threeGeometry = threeShape.extrude(extrusionSettings);
+        threeShape = new THREE.Shape(shapePoints);        
+		threeGeometry = threeShape.extrude(extrusionSettings);
             
         return threeGeometry;
     
