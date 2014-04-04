@@ -1,1 +1,27 @@
-{"author": "Jeff Wax <jeff@jeffwax.com>","name": "3dgrid","version": "0.0.1","main": "index.js","engine": "v0.10.7","description": "Takes a grid array and renders a visualization using three.js","license" : "BSD","repository": {    "type" : "git",    "url" : "http://github.com/Jwaxo/threegrid/"    },"dependencies": {    "three" : "0.58.10"    }}
+{
+  "author": "Jeff Wax <jeff@jeffwax.com>",
+  "name": "threegrid",
+  "version": "0.0.1",
+  "main": "index.js",
+  "engine": "v0.10.7",
+  "description": "Takes a grid array and renders a visualization using three.js",
+  "license": "BSD",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Jwaxo/threegrid/"
+  },
+  "dependencies": {
+    "three": "0.58.10"
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "247dfd47e9afe33e27829d9a88c966814653317d",
+  "devDependencies": {},
+  "scripts": {
+    "test": "beefy test.js"
+  },
+  "keywords": [
+    "three",
+    "grid",
+    "3d"
+  ]
+}
