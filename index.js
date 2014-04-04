@@ -4,7 +4,7 @@ module.exports = function(grid) {
 	//that is three to the right and four below the top-left of the rendering
 	//field, viewed from the top down.
 
-    THREE = require('three'); //Assigns the renderer to THREE automatically
+    var THREE = require('three'); //Assigns the renderer to THREE automatically
     THREE.OrbitControls = require('./OrbitControls.js');
 	
 	var WIDTH = 1200,
@@ -17,7 +17,7 @@ module.exports = function(grid) {
 		NEAR = 0.1,
 		FAR = 10000;
     
-    fs = require('fs'); //fs is used to load physical models, located in the
+    var fs = require('fs'); //fs is used to load physical models, located in the
 	//  config-defined "assetlocation" folder. A model must be named after the
 	//  shape that it replaces, as opposed to the basic placeholder we define in
 	//  default_shapes.js.
@@ -177,21 +177,20 @@ module.exports = function(grid) {
 		
 		var windowHalfX = WIDTH / 2;
 		var windowHalfY = HEIGHT / 2;
-		
-        var shape_temp;
         
-        for (var x=0;x<grid.length;x++) {
-            for (var y=0;y<grid[x].length;y++) {
-                grid[x][y].shape = this.findShape(x,y, true);
+        for (var gridX=0;gridX<grid.length;gridX++) {
+            for (var gridY=0;gridY<grid[gridX].length;gridY++) {
+				var shape_temp;
+                grid[gridX][gridY].shape = this.findShape(gridX,gridY, true);
                 try {
-                    var test = fs.open(this.config.asset_location + "/" + grid[x][y].shape + '.js', 'r')
+                    var test = fs.open(this.config.asset_location + "/" + grid[gridX][gridY].shape + '.js', 'r')
                     if (test) {
-                        jsonLoader.load(this.config.asset_location + "/" + grid[x][y].shape + '.js',addModelToScene);
+                        jsonLoader.load(this.config.asset_location + "/" + grid[gridX][gridY].shape + '.js',addModelToScene);
                         console.log('Somehow loading a model!');
                     }
                 } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
-                    shape_temp = this.drawShape(grid[x][y].shape);
-                    addModelToScene(shape_temp, {color: grid[x][y].color, wireframe: true}, {'x':x,'y':y});
+                    shape_temp = this.drawShape(grid[gridX][gridY].shape);
+                    addModelToScene(shape_temp, {color: grid[gridX][gridY].color, wireframe: true}, {'x':gridX,'y':gridY});
                 }
             }
         }
@@ -311,9 +310,16 @@ module.exports = function(grid) {
 		}
     }
     
-    this.findShape = function(x, y, checkCorners) {
+    this.findShape = function(shapeX, shapeY, checkCorners) {
         //Returns any of the 255* possible shapes that a tile might take given
-        //its surrounding siblings. The number when converted to binary refers
+        //its surrounding siblings.
+		//Params:
+		//(integers) shapeX, shapeY: the coordinates of the shape on the map tile.
+		//(boolean) checkCorners: if true, our check for siblings will ignore
+		//	potential siblings diagonally if there are no siblings next to the
+		//	corner. Makes for neater drawings.
+		
+		//The number of a specific shape when converted to binary refers
         //to each of the eight surrounding tiles starting from the top-left and
         //moving clockwise:
         //1 2 3             0 1 1
@@ -331,36 +337,36 @@ module.exports = function(grid) {
         //numbers are lower down.
         var siblings = [
             {
-                "x" : x-1,
-                "y" : y-1
+                "x" : shapeX-1,
+                "y" : shapeY-1
             }, //1
             {
-                "x" : x,
-                "y" : y-1
+                "x" : shapeX,
+                "y" : shapeY-1
             }, //2
             {
-                "x" : x+1,
-                "y" : y-1
+                "x" : shapeX+1,
+                "y" : shapeY-1
             }, //3
             {
-                "x" : x+1,
-                "y" : y
+                "x" : shapeX+1,
+                "y" : shapeY
             }, //4
             {
-                "x" : x+1,
-                "y" : y+1
+                "x" : shapeX+1,
+                "y" : shapeY+1
             }, //5
             {
-                "x" : x,
-                "y" : y+1
+                "x" : shapeX,
+                "y" : shapeY+1
             }, //6
             {
-                "x" : x-1,
-                "y" : y+1
+                "x" : shapeX-1,
+                "y" : shapeY+1
             }, //7
             {
-                "x" : x-1,
-                "y" : y
+                "x" : shapeX-1,
+                "y" : shapeY
             } //8
         ];
         
@@ -371,20 +377,22 @@ module.exports = function(grid) {
                 && this.grid[siblings[i].x][siblings[i].y]
                 && this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('id')
                 && (
-                    (this.grid[x][y].hasOwnProperty('parentid')
+                    (this.grid[shapeX][shapeY].hasOwnProperty('parentid')
                         && (this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('parentid')
                             && this.grid[siblings[i].x][siblings[i].y].parentid
-                                == this.grid[x][y].parentid
+                                == this.grid[shapeX][shapeY].parentid
                             ) || this.grid[siblings[i].x][siblings[i].y].id
-                                == this.grid[x][y].parentid
+                                == this.grid[shapeX][shapeY].parentid
                         ) || (this.grid[siblings[i].x][siblings[i].y].hasOwnProperty('parentid')
                         && this.grid[siblings[i].x][siblings[i].y].parentid
-                            == this.grid[x][y].id
+                            == this.grid[shapeX][shapeY].id
                         )
                     )
                 ) {
+				//Yes, there is a sibling in that corner.
                 binaryArray.push(1);
             } else {
+				//Nope, no sibling.
                 binaryArray.push(0);
             }
         }
@@ -393,12 +401,12 @@ module.exports = function(grid) {
         //don't have siblings around them, as this means they won't be touching
         //our "center" tiles 
         if (checkCorners === true) {
-            for (var i=0;i<8;i++) {
-                if (binaryArray[i] === 1
-                    && cornersRef.indexOf(i) > -1
-                    && (binaryArray[(i + 1) % 8] === 0 || binaryArray[(i - 1) % 8] === 0)
+            for (var j=0;j<8;j++) {
+                if (binaryArray[j] === 1
+                    && cornersRef.indexOf(j) > -1
+                    && (binaryArray[(j + 1) % 8] === 0 || binaryArray[(j - 1) % 8] === 0)
                     ) {
-                    binaryArray[i] = 0;
+                    binaryArray[j] = 0;
                 }
             }
         }
@@ -406,71 +414,100 @@ module.exports = function(grid) {
         shape = binaryArray.join('');
 
         shape = parseInt(shape, 2);
-        console.log ('Shape in integer for ' + x + ',' + y + ' is ' + shape);
+        console.log ('Shape in integer for ' + shapeX + ',' + shapeY + ' is ' + shape);
         
         return shape;
     }
     
     this.drawShape = function(shape) {
+		//Returns threeGeometry object extruded from a drawn shape.
+		//Params:
+		//(integer) shape, the ID of the shape to be pulled from this.shapesLookup,
+		//	which describes the coordinates of a shape to be drawn.
         console.log('Drawing shape!');
-        var shape_array = [];
-        var shapePoints = [];
-        var parentShape = {};
+		var shapePoints = [];
+		var shape_array = [];
+		var parentShape = {};
 		var threeShape,
 			threeGeometry;
-        var extrusionSettings = {
-            amount : 6,
+		var extrusionSettings = {
+			amount : 6,
 			curveSegments : 3,
-            bevelThickness : 1,
+			bevelThickness : 1,
 			bevelSize : 2,
 			bevelEnabled : false,
-            material : 0,
+			material : 0,
 			extrudeMaterial : 1
-        };
+		}; //These will be customized more at a later date, probably specific
+		//to the tile type.
     
         if (this.rotateLookup.hasOwnProperty(shape)) {
 			//Look in the rotate lookup to see if this shape is one of our
 			//default shapes, just rotated. If so, run that shape for our
 			//coordinates, then rotate the amount our original shape says to
 			//in the rotate lookup.
-            parentShape = this.rotateLookup[shape];
-			original = shape;
-            shape = parentShape.original;
-        }
-        try {
-            shape_array = this.shapesLookup[shape]; //Get our array of coords.
-        } catch(error) {
-            console.log(error);
-        }
-        for (var i=0;i<shape_array.length;i++) {
-            if (parentShape.hasOwnProperty('rotates')) {
-				console.log('Rotating shape ' + parentShape.original + ' ' + parentShape.rotates + ' times to become ' + original);
-                shape_array[i] = rotate(shape_array[i].x, shape_array[i].y, 3, 3, 90 * (parentShape.rotates));
-            }
-            //console.log('adding coordinate '+shape_array[i].x+','+shape_array[i].y);
-            shapePoints.push(new THREE.Vector2(shape_array[i].x, shape_array[i].y));
-        }
+            shapeRef = this.rotateLookup[shape];
+			shape_array = this.shapesLookup[shapeRef.original]; //Get our array of coords.
+			if (shape && shape == 16) {
+				console.log('Shape array is (' + shape_array[0].x+','+shape_array[0].y+')(' + shape_array[1].x+','+shape_array[1].y+')(' + shape_array[2].x+','+shape_array[2].y+')(' + shape_array[3].x+','+shape_array[3].y+')');
+			}
+			shapePoints = this.getShapePoints(shapeRef.original, shapeRef.rotates );
+        } else {
+			shapePoints = this.getShapePoints(shape, 0);
+		}
         
         threeShape = new THREE.Shape(shapePoints);        
 		threeGeometry = threeShape.extrude(extrusionSettings);
             
         return threeGeometry;
-    
-        function rotate(x, y, xm, ym, a) {
-            var cos = Math.cos,
-                sin = Math.sin,
+    }
+	
+	this.getShapePoints = function(shape, rotates) {
+		//Returns an array of three.js vectors
+		//Params:
+		//(integer) shape, the ID of the shape to be pulled from this.shapesLookup,
+		//	which describes the coordinates of a shape to be drawn.
+		//(integer) rotates, how many times to rotate each coordinate 90 before
+		//	drawing.
+		var coordsArray = [];
+		var shapePoints = [];
+		
+		try {
+			coordsArray = this.shapesLookup[shape]; //Get our array of coords.
+		} catch(error) {
+			console.log(error);
+		}
+		for (var k=0;k<coordsArray.length;k++) {
+			var coords = {}
+			if (rotates > 0) {
+				//If our "parent" shape needs to be rotated to match our desired
+				//shape, we need to rotate each individual coordinate.
+				coords = rotate(coordsArray[k].x, coordsArray[k].y, 3, 3, 90 * (rotates));
+			} else {
+				coords = coordsArray[k];
+			}
+			shapePoints.push(new THREE.Vector2(coords.x, coords.y));
+		}
+		
+		return shapePoints;
+	}
+	
+	function rotate(x, y, xm, ym, a) {
+		//Returns an object with .x and .y that have been rotated a degrees with
+		//	midpoint at xm and ym.
+		var cos = Math.cos,
+			sin = Math.sin,
 
-                a = a * Math.PI / 180, // Convert to radians because that's what
-                                       // JavaScript likes
+			a = a * Math.PI / 180, // Convert to radians because that's what
+								   // JavaScript likes
 
-                // Subtract midpoints, so that midpoint is translated to origin
-                // and add it in the end again
-                xr = (x - xm) * cos(a) - (y - ym) * sin(a)   + xm,
-                yr = (x - xm) * sin(a) + (y - ym) * cos(a)   + ym;
+			// Subtract midpoints, so that midpoint is translated to origin
+			// and add it in the end again
+			xr = (x - xm) * cos(a) - (y - ym) * sin(a) + xm,
+			yr = (x - xm) * sin(a) + (y - ym) * cos(a) + ym;
 
-            return {'x':Math.round(xr), 'y':Math.round(yr)};
-        }
-    }    
+		return {'x':Math.round(xr), 'y':Math.round(yr)};
+	}
     
     return this;
 }
