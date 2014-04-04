@@ -1,4 +1,3 @@
-var assert = require('assert');
 var ThreeGrid = require('./index.js');
 
 //This is all best tested using beefy, for in-browser stuff.
@@ -162,11 +161,11 @@ var grid = [
 var config = {
     "size" : "0", //height/size multiplier if greater than 0
     "type" : "type", //what property we're calling the "grouper"
-    "asset_location" : "./examples/shapes",
-    "render_width" : "800", //view grid width in pixels
-    "render_height" : "600" //view grid height in pixels
+    "asset_location" : "./examples/shapes", //not used yet
+    "render_width" : "1200", //view grid width in pixels
+    "render_height" : "800" //view grid height in pixels
 }
 
 var map = new ThreeGrid(grid);
 
-var renderedMap = map.renderGrid(config);
+map.renderGrid(config);

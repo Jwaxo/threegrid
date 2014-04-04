@@ -5,17 +5,6 @@ module.exports = function(grid) {
 	//field, viewed from the top down.
 
     var THREE = require('three'); //Assigns the renderer to THREE automatically
-    THREE.OrbitControls = require('./OrbitControls.js');
-	
-	var WIDTH = 1200,
-		HEIGHT = 800,
-		SCALE = 10;
-
-	// set some camera attributes
-	var VIEW_ANGLE = 45,
-		ASPECT = WIDTH / HEIGHT,
-		NEAR = 0.1,
-		FAR = 10000;
     
     var fs = require('fs'); //fs is used to load physical models, located in the
 	//  config-defined "assetlocation" folder. A model must be named after the
@@ -153,6 +142,20 @@ module.exports = function(grid) {
         
         this.config = config;
 
+		var WIDTH = this.config.render_width,
+			HEIGHT = this.config.render_height,
+			SCALE = 10;
+			
+		if (this.config.scale > 0) {
+			SCALE = SCALE * this.config.scale;
+		}
+
+		// set some camera attributes
+		var VIEW_ANGLE = 45,
+			ASPECT = WIDTH / HEIGHT,
+			NEAR = 0.1,
+			FAR = 10000;
+		
         // get the DOM element to attach to
         // - assume we've got jQuery to hand
         var container = document.createElement('div');
