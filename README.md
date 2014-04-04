@@ -38,11 +38,11 @@ There are three reserved properties of a tile on the grid, which occupies a coor
 
 The fancy part of the module is that any tiles that share the same parent ID, which can be any number you want so long as it matches between tiles you want to be related, will be assigned a shape that would make the most sense. For instance, a tile that has one sibling to the left and one sibling above will be assigned a shape that indicates this relationship:
 
-|---|---|---|
+| - | - | - |
 | X | O | X |
-|---|   |---|
+| - |   | - |
 | A | O   O |
-|---|---|---|
+| - | - | - |
 
 While a set of default shapes for the 13 unique shapes this can create is provided, with coordinates mapping out their shapes in a 2D drawing, the module will eventually have the ability to let you create your own JSON objects of 3D shapes (easily exported from Blender or other 3D modelling software) and pull them in place of the blocky default ones.
 
