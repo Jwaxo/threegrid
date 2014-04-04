@@ -448,9 +448,6 @@ module.exports = function(grid) {
 			//in the rotate lookup.
             shapeRef = this.rotateLookup[shape];
 			shape_array = this.shapesLookup[shapeRef.original]; //Get our array of coords.
-			if (shape && shape == 16) {
-				console.log('Shape array is (' + shape_array[0].x+','+shape_array[0].y+')(' + shape_array[1].x+','+shape_array[1].y+')(' + shape_array[2].x+','+shape_array[2].y+')(' + shape_array[3].x+','+shape_array[3].y+')');
-			}
 			shapePoints = this.getShapePoints(shapeRef.original, shapeRef.rotates );
         } else {
 			shapePoints = this.getShapePoints(shape, 0);
