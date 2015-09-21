@@ -1,7 +1,7 @@
 {
   "author": "Jeff Wax <jeff@jeffwax.com>",
   "name": "threegrid",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "engine": "v0.10.7",
   "description": "Takes a grid array and renders a visualization using three.js",
