@@ -45,7 +45,7 @@ module.exports = function(grid) {
     },
     '68' : {
       'original' : 17,
-      'rotates' : 2
+      'rotates' : 1
     },
     '69' : {
       'original' : 21,
@@ -185,14 +185,14 @@ module.exports = function(grid) {
       for (var gridY=0;gridY<grid[gridX].length;gridY++) {
         var shape_temp;
         grid[gridX][gridY].shape = this.findShape(gridX,gridY, true);
-        console.log('finding shape');
         try {
-          var test = fs.open(this.config.asset_location + "/" + grid[gridX][gridY].shape + '.js', 'r')
+          var test = fs.open(this.config.asset_location + "/" + grid[gridX][gridY].shape + '.js', 'r');
           if (test) {
             jsonLoader.load(this.config.asset_location + "/" + grid[gridX][gridY].shape + '.js',addModelToScene);
             console.log('Somehow loading a model!');
           }
-        } catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
+        }
+        catch(err) { //We didn't find the file, so lookup how to draw it, then extrude
           console.log('Could not find shape with fs so instead drawing shape from defaults.');
           shape_temp = this.drawShape(grid[gridX][gridY].shape);
           addModelToScene(shape_temp, {color: grid[gridX][gridY].color, wireframe: true}, {'x':gridX,'y':gridY});
@@ -203,10 +203,7 @@ module.exports = function(grid) {
     // create a WebGL renderer, camera
     // and a scene
     var renderer = new THREE.WebGLRenderer();
-    var camera = new THREE.PerspectiveCamera(  VIEW_ANGLE,
-      ASPECT,
-      NEAR,
-      FAR  );
+    var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
     document.addEventListener('change', render);
 
     // the camera starts at 0,0,0 so pull it back
@@ -313,7 +310,7 @@ module.exports = function(grid) {
         targetMoveY = targetMoveYOnMouseDown + (mouseY - mouseYOnMouseDown) * 0.05;
       }
     }
-  }
+  };
 
   this.findShape = function(shapeX, shapeY, checkCorners) {
     //Returns any of the 255* possible shapes that a tile might take given
@@ -422,7 +419,7 @@ module.exports = function(grid) {
     console.log ('Shape in integer for ' + shapeX + ',' + shapeY + ' is ' + shape);
 
     return shape;
-  }
+  };
 
   this.drawShape = function(shape) {
     //Returns threeGeometry object extruded from a drawn shape.
@@ -462,7 +459,7 @@ module.exports = function(grid) {
     threeGeometry = threeShape.extrude(extrusionSettings);
 
     return threeGeometry;
-  }
+  };
 
   this.getShapePoints = function(shape, rotates) {
     //Returns an array of three.js vectors
@@ -480,7 +477,7 @@ module.exports = function(grid) {
       console.log(error);
     }
     for (var k=0;k<coordsArray.length;k++) {
-      var coords = {}
+      var coords = {};
       if (rotates > 0) {
         //If our "parent" shape needs to be rotated to match our desired
         //shape, we need to rotate each individual coordinate.
@@ -492,24 +489,24 @@ module.exports = function(grid) {
     }
 
     return shapePoints;
-  }
+  };
 
   function rotate(x, y, xm, ym, a) {
     //Returns an object with .x and .y that have been rotated a degrees with
     //	midpoint at xm and ym.
     var cos = Math.cos,
-      sin = Math.sin,
+      sin = Math.sin;
 
-      a = a * Math.PI / 180, // Convert to radians because that's what
+    a = a * Math.PI / 180; // Convert to radians because that's what
     // JavaScript likes
 
     // Subtract midpoints, so that midpoint is translated to origin
     // and add it in the end again
-      xr = (x - xm) * cos(a) - (y - ym) * sin(a) + xm,
+    var xr = (x - xm) * cos(a) - (y - ym) * sin(a) + xm,
       yr = (x - xm) * sin(a) + (y - ym) * cos(a) + ym;
 
     return {'x':Math.round(xr), 'y':Math.round(yr)};
   }
 
   return this;
-}
+};
