@@ -1,14 +1,14 @@
 var ThreeGrid = require('./index.js');
 
-//This is all best tested using beefy, for in-browser stuff.
-//More a personal note than anything.
+// This is all best tested using beefy, for in-browser stuff.
+// More a personal note than anything.
 
-//First we need some sort of grid. Grids are arranged in an [x][y] fashion made
-//up of sequential, positive integers, with 0,0 being the bottom-left corner,
-//since JS can't have negative array keys without some major problems.
+// First we need some sort of grid. Grids are arranged in an [x][y] fashion made
+// up of sequential, positive integers, with 0,0 being the bottom-left corner,
+// since JS can't have negative array keys without some major problems.
 
-//The Y slot is ideally an object that stores more information about a give grid
-//-point, such as relating a parent grid point (one of our built-in functions).
+// The Y slot is ideally an object that stores more information about a give grid
+// -point, such as relating a parent grid point (one of our built-in functions).
 
 var grid = [
     [
@@ -155,8 +155,8 @@ var grid = [
     ]
 ];
 
-//Sheesh. The IDs are creator-defined as they may be determined by some means
-//other than "what order in the array are you."
+// Sheesh. The IDs are creator-defined as they may be determined by some means
+// other than "what order in the array are you."
 
 var config = {
     "size" : "0", //height/size multiplier if greater than 0
@@ -164,7 +164,7 @@ var config = {
     "asset_location" : "./examples/shapes", //not used yet
     "render_width" : "1200", //view grid width in pixels
     "render_height" : "800" //view grid height in pixels
-}
+};
 
 var map = new ThreeGrid(grid);
 

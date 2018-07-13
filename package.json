@@ -11,6 +11,8 @@
     "url": "http://github.com/Jwaxo/threegrid/"
   },
   "dependencies": {
+    "browserify": "^16.2.2",
+    "fs": "0.0.1-security",
     "three": "0.58.10"
   },
   "readmeFilename": "README.md",
